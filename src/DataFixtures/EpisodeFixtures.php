@@ -2,107 +2,49 @@
 
 namespace App\DataFixtures;
 
+use Faker\Factory;
 use App\Entity\Episode;
 use App\Entity\Program;
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Persistence\ObjectManager;
+
 
 class EpisodeFixtures extends Fixture implements DependentFixtureInterface
 {
-
-    const EPISODES = [
-
-        [
-            'title' => "Episode 1",
-            'synopsis' => "Death note sit amet consectetur adipisicing elit. Tempora, soluta!",
-            'number' => "2",
-            'season' => "1",
-            'program' => "Death note"
-        ],
-        [
-            'title' => "Episode 2",
-            'synopsis' => "Death note sit amet consectetur adipisicing elit. Tempora, soluta!",
-            'number' => "2",
-            'season' => "1",
-            'program' => "Death note"
-        ],
-        [
-            'title' => "Episode 3",
-            'synopsis' => "Death note sit amet consectetur adipisicing elit. Tempora, soluta!",
-            'number' => "3",
-            'season' => "1",
-            'program' => "Death note"
-        ],
-        [
-            'title' => "Episode 1",
-            'synopsis' => "Death note sit amet consectetur adipisicing elit. Tempora, soluta!",
-            'number' => "1",
-            'season' => "2",
-            'program' => "Death note"
-        ],
-        [
-            'title' => "Episode 2",
-            'synopsis' => "Death note sit amet consectetur adipisicing elit. Tempora, soluta!",
-            'number' => "2",
-            'season' => "2",
-            'program' => "Death note"
-        ],
-        [
-            'title' => "Episode 3",
-            'synopsis' => "Death note sit amet consectetur adipisicing elit. Tempora, soluta!",
-            'number' => "3",
-            'season' => "2",
-            'program' => "Death note"
-        ],
-        [
-            'title' => "Episode 1",
-            'synopsis' => "Death note sit amet consectetur adipisicing elit. Tempora, soluta!",
-            'number' => "1",
-            'season' => "3",
-            'program' => "Death note"
-        ],
-        [
-            'title' => "Episode 2",
-            'synopsis' => "Death note sit amet consectetur adipisicing elit. Tempora, soluta!",
-            'number' => "2",
-            'season' => "3",
-            'program' => "Death note"
-        ],
-        [
-            'title' => "Episode 3",
-            'synopsis' => "Death note sit amet consectetur adipisicing elit. Tempora, soluta!",
-            'number' => "3",
-            'season' => "3",
-            'program' => "Death note"
-        ]
-    ];
-
     public function load(ObjectManager $manager): void
     {
-        foreach (SELF::EPISODES as $chapter) {
 
-            $episode = new Episode();
+        //Puis ici nous demandons à la Factory de nous fournir un Faker
 
-            $episode->setNumber($chapter['number']);
+        $faker = Factory::create();
 
-            $episode->setTitle($chapter['title']);
 
-            $episode->setSynopsis($chapter['synopsis']);
+        for ($i = 0; $i < 5; $i++) {
+            for ($j = 1; $j < 6; $j++) {
+                for ($k = 1; $k < 11; $k++) {
 
-            $episode->setSeason($this->getReference($chapter['program'] . ' season_' . $chapter['season']));
 
-            $manager->persist($episode);
+                    $episode = new Episode();
+                    //Ce Faker va nous permettre d'alimenter l'instance de episode que l'on souhaite ajouter en base
+                    $episode->setNumber($k);
+                    $episode->setTitle($faker->words(3, true));
+                    $episode->setSynopsis($faker->paragraph());
+                    $episode->setSeason($this->getReference('program_' . $i . '_season_' . $j));
+                    $manager->persist($episode);
+                }
+            }
         }
+
 
         $manager->flush();
     }
+
 
     public function getDependencies()
     {
         // Tu retournes ici toutes les classes de fixtures dont ProgramFixtures dépend
         return [
-            SeasonFixtures::class,
             ProgramFixtures::class
         ];
     }

@@ -2,127 +2,43 @@
 
 namespace App\DataFixtures;
 
+use Faker\Factory;
 use App\Entity\Season;
+use App\DataFixtures\ProgramFixtures;
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Persistence\ObjectManager;
+
 
 class SeasonFixtures extends Fixture implements DependentFixtureInterface
 
 {
-    const SEASONS = [
-
-        [
-            'number' => "1",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Walking dead"
-        ],
-        [
-            'number' => "2",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Walking dead"
-        ],
-        [
-            'number' => "3",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Walking dead"
-        ],
-        [
-            'number' => "1",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Breaking Bad"
-        ],
-        [
-            'number' => "2",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Breaking Bad"
-        ],
-        [
-            'number' => "3",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Breaking Bad"
-        ],
-        [
-            'number' => "1",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Lastman"
-        ],
-        [
-            'number' => "2",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Lastman"
-        ],
-        [
-            'number' => "3",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Lastman"
-        ],
-        [
-            'number' => "1",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Death note"
-        ],
-        [
-            'number' => "2",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Death note"
-        ],
-        [
-            'number' => "3",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Death note"
-        ],
-        [
-            'number' => "1",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Better Call Saul"
-        ],
-        [
-            'number' => "2",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Better Call Saul"
-        ],
-        [
-            'number' => "3",
-            'year' => "2005",
-            'description' => "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, expedita?",
-            'program' => "Better Call Saul"
-        ]
-    ];
 
     public function load(ObjectManager $manager): void
     {
-        foreach (SELF::SEASONS as $book) {
 
-            $season = new Season();
-            $season->setNumber($book['number']);
+        $faker = Factory::create();
 
-            $season->setYear($book['year']);
 
-            $season->setDescription($book['description']);
+        for ($i = 0; $i < 5; $i++) {
+            for ($j = 1; $j < 6; $j++) {
 
-            $season->setProgram($this->getReference($book['program']));
+                $season = new Season();
+                //Ce Faker va nous permettre d'alimenter l'instance de Season que l'on souhaite ajouter en base
+                $season->setNumber($j);
+                $season->setYear($faker->year());
+                $season->setDescription($faker->paragraphs(3, true));
 
-            $manager->persist($season);
-            $this->addReference($book['program'] . ' season_' . $book['number'], $season);
+                $season->setProgram($this->getReference('program_' . $i));
+                $this->setReference('program_' . $i . '_season_' . $j, $season);
+                $manager->persist($season);
+            }
         }
+
 
         $manager->flush();
     }
+
 
     public function getDependencies()
     {
