@@ -16,7 +16,7 @@
 
 			<h2>Catégorie
 				{{ loop.index}}:
-				<a href="/category/{{category.name}}">
+				<a href="{{ path("category_show", { categoryName: category.name }) }}">
 					{{ category.name }}</h2>
 			</a>
 
@@ -26,13 +26,24 @@
 
 		Aucune série trouvée.
 
-	{% endfor %}
 
+{% endfor %}
 
-	<a href="{{ path('app_index') }}">
+	<div>
+		<a href="{{ path('category_new') }}">
 
-		Retour à l'accueil
+			Ajouter une catégorie
 
-	</a>
+		</a>
+	</div>
+	<div>
+		<a href="{{ path('app_index') }}">
+
+			Retour à l'accueil
+
+		</a>
+	</div>
 
 {% endblock %}
+
+
