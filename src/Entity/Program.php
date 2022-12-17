@@ -35,7 +35,7 @@ class Program
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     #[Assert\Regex(
-        pattern:'/(?i)plus belle la vie/',
+        pattern:'/plus belle la vie/',
         match:false,
         message: 'Ceci n\'est pas une série')]
     private ?string $synopsis = null;

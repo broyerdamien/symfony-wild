@@ -9,12 +9,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 #[Route('/season')]
 class SeasonController extends AbstractController
 {
     #[Route('/', name: 'app_season_index', methods: ['GET'])]
-    public function index(SeasonRepository $seasonRepository): Response
+    public function index(RequestStack $requestStack, SeasonRepository $seasonRepository): Response
     {
         return $this->render('season/index.html.twig', [
             'seasons' => $seasonRepository->findAll(),
@@ -30,7 +31,7 @@ class SeasonController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $seasonRepository->save($season, true);
-
+            $this->addFlash('sucess', 'The new season has been created');
             return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -56,7 +57,7 @@ class SeasonController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $seasonRepository->save($season, true);
-
+            $this->addFlash('sucess', 'The season has been edited');
             return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -69,9 +70,10 @@ class SeasonController extends AbstractController
     #[Route('/{id}', name: 'app_season_delete', methods: ['POST'])]
     public function delete(Request $request, Season $season, SeasonRepository $seasonRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$season->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $season->getId(), $request->request->get('_token'))) {
             $seasonRepository->remove($season, true);
         }
+        $this->addFlash('danger', 'The season has been deleted');
 
         return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
     }
