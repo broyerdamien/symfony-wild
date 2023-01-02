@@ -1,0 +1,19 @@
+{% extends "emailLayout.html.twig" %}
+{% block title %}
+	Nouvel épisode créé pour la série
+	{{ episode.season.program.title }}
+{% endblock %}
+
+{% block information %}
+	Hello Wild sérivore ! Un nouvel épisode vient d'être créé pour la série
+	{{ episode.season.program.title }}
+	: S{{episode.season.number}}E{{episode.number}}
+	-
+	{{episode.title}}
+
+{% endblock %}
+
+{% block synopsis %}
+	Synopsis :
+	{{ episode.synopsis }}
+{% endblock %}
