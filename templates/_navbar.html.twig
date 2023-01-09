@@ -19,19 +19,31 @@
 					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 						Dropdown link
 					</a>
-					<ul class="dropdown-menu">
-						<li>
-							<a class="dropdown-item" href="/episode">Episode crud</a>
-						</li>
-						<li>
-							<a class="dropdown-item" href="/season">Season crud</a>
-						</li>
-						<li>
-							<a class="dropdown-item" href="#">Something else here</a>
-						</li>
-					</ul>
 				</li>
-			</ul>
-		</div>
-	</div>
-</nav>
+				<li class="nav-item dropdown">
+					{% if app.user %}
+						{{ app.user.email }}
+						<a class="nav-link" href="{{ path('app_logout') }}">
+							Se déconnecter</a>
+					{% else %}
+						<a class="nav-link" href="{{ path('app_login') }}">
+							Se connecter</a>
+					{% endif %}
+				</li>
+
+				<ul class="dropdown-menu">
+					<li>
+						<a class="dropdown-item" href="/episode">Episode crud</a>
+					</li>
+					<li>
+						<a class="dropdown-item" href="/season">Season crud</a>
+					</li>
+					<li>
+						<a class="dropdown-item" href="#">Something else here</a>
+					</li>
+
+				</ul>
+			</li>
+		</li>
+	</ul>
+</div></div></nav>

@@ -6,6 +6,13 @@
 {% block body %}
 	<h1>Program index</h1>
 
+	<h1>Toutes les séries</h1>
+
+	{{ form_start(form) }}
+	{{ form_widget(form) }}
+	<button>Search</button>
+	{{ form_end(form) }}
+
 	<table class="table">
 		<thead>
 			<tr>
@@ -24,7 +31,7 @@
 					<td>{{ program.id }}</td>
 					<td>{{ program.title }}</td>
 					<td>{{ program.synopsis }}</td>
-					<td>{{ program.poster }}</td>
+					<td><img class="w-25" src='{{ vich_uploader_asset(program) }}'></td>
 					<td>{{ program.country }}</td>
 					<td>{{ program.year }}</td>
 					<td>

@@ -6,6 +6,7 @@ use App\Entity\Season;
 use App\Entity\Episode;
 use App\Entity\Program;
 use App\Form\ProgramType;
+use App\Form\SearchProgramType;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use App\Repository\ProgramRepository;
@@ -20,13 +21,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Route('/program')]
 class ProgramController extends AbstractController
 {
-    #[Route('/', name: 'app_program_index', methods: ['GET'])]
-    public function index(RequestStack $requestStack, ProgramRepository $programRepository): Response
+    #[Route('/', name: 'app_program_index', methods: ['GET','POST'])]
+    public function index(Request $request,RequestStack $requestStack, ProgramRepository $programRepository): Response
     {
         $session = $requestStack->getSession();
+      
+        $form = $this->createForm(SearchProgramType::class);
+        $form->handleRequest($request);
 
-        return $this->render('program/index.html.twig', [
-            'programs' => $programRepository->findAll(),
+        if ($form->isSubmitted() && $form->isValid()) {
+            $search = $form->getData()['search'];
+
+            $programs = $programRepository->findLikeName($search);
+        } else {
+        $programs = $programRepository->findAll();
+        }
+
+        return $this->renderForm('program/index.html.twig', [
+            'programs' => $programs,
+            'form' => $form
         ]);
     }
 

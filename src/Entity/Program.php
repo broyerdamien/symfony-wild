@@ -3,18 +3,25 @@
 namespace App\Entity;
 
 use App\Repository\ProgramRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
+//Ici on importe le package Vich, que l’on utilisera sous l’alias “Vich”
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+
 
 #[ORM\Entity(repositoryClass: ProgramRepository::class)]
 #[UniqueEntity(
-    fields:['title'],
+    fields: ['title'],
     errorPath: '',
-message: 'Ce titre existe déja.')]
+    message: 'Ce titre existe déja.'
+)]
+#[Vich\Uploadable]
 
 class Program
 {
@@ -23,21 +30,22 @@ class Program
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(name:'title', type: 'string', length: 255,  unique: true)]
+    #[ORM\Column(name: 'title', type: 'string', length: 255,  unique: true)]
     #[Assert\NotBlank(message: 'Ne me laisse pas tout vide')]
     #[Assert\Length(
-    max: 255,
-    maxMessage: 'La catégorie saisie {{ value }} est trop longue, elle ne devrait pas dépasser {{ limit }} caractères',
+        max: 255,
+        maxMessage: 'La catégorie saisie {{ value }} est trop longue, elle ne devrait pas dépasser {{ limit }} caractères',
     )]
     protected $title;
 
-    
+
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     #[Assert\Regex(
-        pattern:'/plus belle la vie/',
-        match:false,
-        message: 'Ceci n\'est pas une série')]
+        pattern: '/plus belle la vie/',
+        match: false,
+        message: 'Ceci n\'est pas une série'
+    )]
     private ?string $synopsis = null;
 
     #[ORM\Column(length: 255)]
@@ -57,6 +65,17 @@ class Program
 
     #[ORM\ManyToMany(targetEntity: Actor::class, mappedBy: 'programs')]
     private Collection $actors;
+
+    #[Vich\UploadableField(mapping: 'poster_file', fileNameProperty: 'poster')]
+    #[Assert\File(
+        maxSize: '1M',
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    )]
+    private ?File $posterFile = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $updatedAt = null;
+
 
     public function __construct()
     {
@@ -140,7 +159,6 @@ class Program
 
         return $this;
     }
-
     /**
      * @return Collection<int, Season>
      */
@@ -195,6 +213,30 @@ class Program
             $actor->removeProgram($this);
         }
 
+        return $this;
+    }
+
+
+    public function setPosterFile(File $image = null): Program
+    {
+        $this->posterFile = $image;
+        if ($image) {
+            $this->updatedAt = new \DateTime('now');
+        }
+        return $this;
+    }
+
+    public function getPosterFile(): ?File
+    {
+        return $this->posterFile;
+    }
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 }
