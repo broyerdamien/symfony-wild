@@ -51,6 +51,10 @@ class ProgramController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $actors = $program->getActors();
+            foreach($actors as $actor) {
+                $actor->addProgram($program);
+            }
             $programRepository->save($program, true);
 
 

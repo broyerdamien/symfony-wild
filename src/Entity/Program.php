@@ -63,7 +63,7 @@ class Program
     #[ORM\OneToMany(mappedBy: 'program', targetEntity: Season::class)]
     private Collection $seasons;
 
-    #[ORM\ManyToMany(targetEntity: Actor::class, mappedBy: 'programs')]
+    #[ORM\ManyToMany(targetEntity: Actor::class, mappedBy: 'programs', cascade:["persist"])]
     private Collection $actors;
 
     #[Vich\UploadableField(mapping: 'poster_file', fileNameProperty: 'poster')]
